@@ -52,8 +52,15 @@ Example:
     t = torch.randn(n, dim, device=device)
     y = torch.randint(0, labels, (n,), device=device)
 
-    model = Sequential(*[Linear(dim, hidden), ReLU(), Linear(hidden, hidden), ReLU(), Linear(hidden, labels)]).to(device)
+    model = Sequential(
+        Linear(dim, hidden),
+        ReLU(),
+        Linear(hidden, hidden),
+        ReLU(),
+        Linear(hidden, labels),
+    ).to(device)
     optimizer = torch.optim.Adam(model.parameters())
+    loss_func = torch.nn.CrossEntropyLoss()
 
     timer.mark("init").stop()
 
@@ -67,27 +74,40 @@ Example:
                         with timer.mark("forward"):
                             pred = model(t[batch * bs : (batch + 1) * bs])
                         with timer.mark("loss", ignore=epoch > 2):
-                            loss = torch.nn.functional.cross_entropy(pred, y[batch * bs : (batch + 1) * bs])
+                            loss = loss_func(pred, y[batch * bs : (batch + 1) * bs])
                         with timer.mark("backward", ignore=epoch > 2):
                             loss.backward()
                         optimizer.step()
-                        if batch % 10 == 0:
-                            print(f"Epoch {epoch}, batch {batch}, loss {loss.item():.3f}")
-                time.sleep(torch.randint(1, 50, (1,)).item())
+
+                    if batch % 10 == 0:
+                        print(f"Epoch {epoch}, batch {batch}, loss {loss.item():.3f}")
+
+    # compute mean/std stats for each clock in the timer
+    stats = timer.stats()
+
+    # stats will be computed internally if not provided
+    print(timer.display(stats=stats, precision=5))
+
+.. code-block:: text
+
 
 """
 
-from collections import defaultdict
 import torch
 from torch_simple_timing.clock import Clock
 
 
 class Timer:
     def __init__(self, gpu=False, ignore=False):
-        self.times = defaultdict(list)
-        self.timers = {}
+        self.times = {}
+        self.clocks = {}
         self.gpu = gpu
         self.ignore = ignore
+
+    def __repr__(self):
+        t = {k: len(v) for k, v in self.times.items()}
+        r = f"Timer(gpu={self.gpu}, ignore={self.ignore}, times={t})"
+        return r
 
     def reset(self, keys=None):
         """
@@ -102,24 +122,30 @@ class Timer:
             keys = [keys]
 
         if keys is None:
-            self.times = defaultdict(list)
-            self.timers = {}
+            self.times = {}
+            self.clocks = {}
         else:
             for k in keys:
-                if k in self.times:
-                    self.times[k] = []
-                self.timers.pop(k, None)
+                self.times.pop(k, None)
+                self.clocks.pop(k, None)
 
     def mark(self, name, ignore=None, gpu=None):
-        if name not in self.timers:
+        if name not in self.clocks:
             if ignore is None:
                 ignore = self.ignore
-            self.timers[name] = Clock(
+            self.clocks[name] = Clock(
                 name, self.times, self.gpu if gpu is None else gpu, ignore
             )
-        if ignore != self.timers[name].ignore:
-            self.timers[name].ignore = ignore
-        return self.timers[name]
+        if ignore != self.clocks[name].ignore:
+            self.clocks[name].ignore = ignore
+        return self.clocks[name]
+
+    def disable(self, clock_names=None):
+        if clock_names is None:
+            clock_names = self.clocks.keys()
+        for k in clock_names:
+            if k in self.clocks:
+                self.clocks[k].ignore = True
 
     def stats(self, clock_names=None):
         if clock_names is None:
@@ -135,8 +161,9 @@ class Timer:
                 stats[k] = {"mean": m, "std": s, "n": n}
         return stats
 
-    def display(self, clock_names=None, precision=3, sort_keys_func=None):
-        stats = self.stats(clock_names)
+    def display(self, clock_names=None, precision=3, sort_keys_func=None, stats=None):
+        if stats is None:
+            stats = self.stats(clock_names)
         if sort_keys_func is not None:
             keys = sorted(stats.keys(), key=sort_keys_func)
         else:
