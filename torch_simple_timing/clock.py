@@ -70,6 +70,45 @@ class Clock:
     """
     A utility class for timing Pytorch code.
 
+    A clock can be used as a context manager or as a stand-alone object.
+
+    After the clock is stopped, the ``duration`` attribute contains the
+    time in seconds between the start and stop calls.
+
+    ``Clock`` objects can be used to time GPU code. For timings to be meaningful,
+    they use ``torch.cuda.synchronize()`` to ensure that all GPU kernels have
+    finished before the timer stops.
+
+    You can provide a dictionary or a list to store the results of the clock.
+    In the case of a ``dict``, the ``name`` argument is used as a key to store
+    the ``duration`` in a ``list``:
+
+    .. code-block:: python
+        from torch_simple_timing.clock import Clock
+
+        store = {}
+        clock = Clock(store=store, name="my-timer").start()
+        clock.stop()
+        assert len(store["my-timer"]) == 1
+        assert store["my-timer"][0] == clock.duration
+
+        clock = Clock(store=store, name="my-timer").start()
+        clock.stop()
+        assert len(store["my-timer"]) == 2
+        assert store["my-timer"][1] == clock.duration
+
+        clock = Clock(store=store, name="other").start()
+        clock.stop()
+        assert len(store["my-timer"]) == 2
+        assert len(store["other"]) == 1
+        assert store["other"][0] == clock.duration
+
+        print(store)
+        {
+            "my-timer": [4.1961669921875e-05, 3.504753112792969e-05],
+            "other": [3.314018249511719e-05]
+        }
+
     Args:
         name (str): The name of the timer.
         store (Dict[str, List], optional): A dictionary for storing timer results.
