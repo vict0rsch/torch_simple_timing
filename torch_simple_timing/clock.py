@@ -154,10 +154,20 @@ class Clock:
             if isinstance(self.store, list):
                 self.store.append(self.duration)
             elif isinstance(self.store, dict):
+                if self.name not in self.store:
+                    raise KeyError(
+                        f"Key `{self.name}` is not in the"
+                        + f" clock's store dict: {self.store}."
+                        + "\nIt should have been, so this is likely due to you"
+                        + " modifying the store dict after the clock was created. "
+                    )
                 if isinstance(self.store[self.name], list):
                     self.store[self.name].append(self.duration)
                 else:
-                    self.store[self.name] = self.duration
+                    raise TypeError(
+                        "store must be a dictionary of lists, "
+                        + f"but {self.name} is a {type(self.store[self.name])}"
+                    )
             else:
                 raise TypeError("store must be a dictionary or a list")
 
