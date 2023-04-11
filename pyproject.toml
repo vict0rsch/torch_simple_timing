@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "torch-simple-timing"
+version = "0.1.0"
+description = "A simple package to time CPU/GPU/Multi-GPU ops"
+authors = ["vict0rsch <vsch@pm.me>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "torch_simple_timing"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+torch = "^1.11, ^2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.2"
+ipython = "^8.12.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
