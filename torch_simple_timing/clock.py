@@ -6,6 +6,7 @@ This clock is the base module reused in :class:`torch_simple_timing.timer.Timer`
 To use stand-alone:
 
 .. code-block:: python
+
     import torch
     from torch_simple_timing.clock import Clock
 
@@ -67,57 +68,6 @@ import torch
 
 
 class Clock:
-    """
-    A utility class for timing Pytorch code.
-
-    A clock can be used as a context manager or as a stand-alone object.
-
-    After the clock is stopped, the ``duration`` attribute contains the
-    time in seconds between the start and stop calls.
-
-    ``Clock`` objects can be used to time GPU code. For timings to be meaningful,
-    they use ``torch.cuda.synchronize()`` to ensure that all GPU kernels have
-    finished before the timer stops.
-
-    You can provide a dictionary or a list to store the results of the clock.
-    In the case of a ``dict``, the ``name`` argument is used as a key to store
-    the ``duration`` in a ``list``:
-
-    .. code-block:: python
-        from torch_simple_timing.clock import Clock
-
-        store = {}
-        clock = Clock(store=store, name="my-timer").start()
-        clock.stop()
-        assert len(store["my-timer"]) == 1
-        assert store["my-timer"][0] == clock.duration
-
-        clock = Clock(store=store, name="my-timer").start()
-        clock.stop()
-        assert len(store["my-timer"]) == 2
-        assert store["my-timer"][1] == clock.duration
-
-        clock = Clock(store=store, name="other").start()
-        clock.stop()
-        assert len(store["my-timer"]) == 2
-        assert len(store["other"]) == 1
-        assert store["other"][0] == clock.duration
-
-        print(store)
-        {
-            "my-timer": [4.1961669921875e-05, 3.504753112792969e-05],
-            "other": [3.314018249511719e-05]
-        }
-
-    Args:
-        name (str): The name of the timer.
-        store (Dict[str, List], optional): A dictionary for storing timer results.
-            Defaults to {}.
-        gpu (bool, optional): Indicates if GPU timing should be used. Defaults to False.
-        ignore (bool, optional): If True, the timer does not record any results.
-            Defaults to False.
-    """
-
     def __init__(
         self,
         name: Optional[str] = None,
@@ -125,6 +75,31 @@ class Clock:
         gpu: Optional[bool] = False,
         ignore: Optional[bool] = False,
     ):
+        """
+        A utility class for timing Pytorch code.
+
+        A clock can be used as a context manager or as a stand-alone object.
+
+        After the clock is stopped, the ``duration`` attribute contains the
+        time in seconds between the start and stop calls.
+
+        ``Clock`` objects can be used to time GPU code. For timings to be meaningful,
+        they use :func:`torch.cuda.synchronize()` to ensure that all GPU kernels have
+        finished before the timer starts and stops.
+
+        You can provide a dictionary or a list to store the results of the clock.
+        In the case of a ``dict``, the ``name`` argument is used as a key to store
+        the ``duration`` in a ``list``.
+
+        Args:
+            name (str): The name of the timer.
+            store (Dict[str, List], optional): A dictionary for storing timer results.
+                Defaults to ``{}``.
+            gpu (bool, optional): Indicates if GPU timing should be used. Defaults to
+                ``False``.
+            ignore (bool, optional): If True, the timer does not record any results.
+                Defaults to ``False``.
+        """
         self.store = store
         self.name = name
         self.gpu = gpu
@@ -154,12 +129,26 @@ class Clock:
         """
         return self.start()
 
-    def start(self):
+    def start(self) -> "Clock":
+        """
+        Start timing. This is called automatically when using the clock as a
+        context manager.
+
+        Returns itself for chaining:
+
+        .. code-block:: python
+
+            clock = Clock().start()
+
+        Returns:
+            Clock: The ``self`` ``Clock`` instance.
+        """
         if self.ignore:
             return
         if self.gpu:
             self.start_event = torch.cuda.Event(enable_timing=True)
             self.end_event = torch.cuda.Event(enable_timing=True)
+            synchronize()
             self.start_event.record()
         else:
             self.start_time = time()
@@ -177,7 +166,18 @@ class Clock:
         """
         self.stop()
 
-    def stop(self):
+    def stop(self) -> None:
+        """
+        Stop timing. This is called automatically when using the clock as a
+        context manager.
+
+        Raises:
+            KeyError: If the clock's name is not in the ``self.store`` ``dict``.
+                This may happen if you tinker with the ``Timer`` 's internal data.
+            TypeError: If the Timer's ``store`` is not a ``dict`` or a ``list``.
+            TypeError: If the Timer's ``store`` is a ``dict`` but it does not
+                map to a ``list``.
+        """
         if self.ignore:
             return
 
@@ -216,6 +216,7 @@ class Clock:
         If the clock has been used, it also includes its latest duration.
 
         .. code-block:: python
+
             # Example outputs
             Clock(store=<NoneType>, name=None, gpu=False, ignore=False)
             Clock(store=<list[2]>, name=None, gpu=False, ignore=False | duration=0.303)
@@ -231,7 +232,6 @@ class Clock:
             if k in {"name", "store", "gpu", "ignore"}
         }
         if isinstance(self.store, dict):
-
             d["store"] = {
                 k: f"<{type(v).__name__}>"
                 if not hasattr(v, "__len__")

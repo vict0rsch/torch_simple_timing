@@ -27,10 +27,12 @@ def get_world_size() -> int:
 def synchronize() -> None:
     """
     Synchronizes:
-        * nothing on CPU
-        * per-GPU CUDA streams
-        * across all processes in distributed training with
-    ``torch.distributed.barrier()``
+
+    * nothing on CPU
+    * per-GPU CUDA streams with :func:`torch.cuda.synchronize()`
+    * across all processes in distributed training with
+      :func:`torch.distributed.barrier()`
+
     """
     if not torch.cuda.is_available():
         return
