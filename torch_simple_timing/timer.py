@@ -4,7 +4,7 @@ leverages the :class:`~torch_simple_timing.clock.Clock` class to measure
 execution times.
 
 When the constructor argument ``gpu`` is set to ``True``, the timer's clocks
-will use ``torch.cuda.Event`` to time GPU code. For timings to be meaningful,
+will use :class:`torch.cuda.Event` to time GPU code. For timings to be meaningful,
 :func:`torch.cuda.synchronize()` must be called before and after the code block.
 In the case of distributed training, :func:`torch.distributed.barrier()` will also
 be called.
