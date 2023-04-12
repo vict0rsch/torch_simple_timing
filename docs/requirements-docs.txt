@@ -1,9 +1,9 @@
 pytest
 ipython
-sphinx==6.1.3
-myst-parser==1.0.0
+sphinx
+myst-parser
 furo==2023.3.27
-sphinx-copybutton==0.5.1
-sphinx-autodoc-typehints==1.22
+sphinx-copybutton
+sphinx-autodoc-typehints
 sphinx-autoapi==2.1.0
-sphinx-math-dollar==1.2.1
+sphinx-math-dollar
