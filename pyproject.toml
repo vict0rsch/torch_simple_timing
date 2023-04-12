@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "torch-simple-timing"
-version = "0.1.0"
+version = "0.1.1"
 description = "A simple package to time CPU/GPU/Multi-GPU ops"
 authors = ["vict0rsch <vsch@pm.me>"]
 license = "MIT"
