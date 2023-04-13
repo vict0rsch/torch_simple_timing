@@ -45,7 +45,7 @@ Example:
     timer = Timer(gpu=gpu)
 
     # manual start
-    timer.mark("init").start()
+    timer.clock("init").start()
 
     batches = 32
     bs = 64
@@ -68,20 +68,20 @@ Example:
     optimizer = torch.optim.Adam(model.parameters())
     loss_func = torch.nn.CrossEntropyLoss()
 
-    timer.mark("init").stop()
+    timer.clock("init").stop()
 
-    with timer.mark("train-loop"):
+    with timer.clock("train-loop"):
         for epoch in range(epochs):
-            with timer.mark("train-epoch"):
+            with timer.clock("train-epoch"):
                 for batch in range(batches):
                     optimizer.zero_grad()
                     # only time the first 2 epochs
-                    with timer.mark("train-batch", ignore=epoch > 2):
-                        with timer.mark("forward"):
+                    with timer.clock("train-batch", ignore=epoch > 2):
+                        with timer.clock("forward"):
                             pred = model(t[batch * bs : (batch + 1) * bs])
-                        with timer.mark("loss", ignore=epoch > 2):
+                        with timer.clock("loss", ignore=epoch > 2):
                             loss = loss_func(pred, y[batch * bs : (batch + 1) * bs])
-                        with timer.mark("backward", ignore=epoch > 2):
+                        with timer.clock("backward", ignore=epoch > 2):
                             loss.backward()
                         optimizer.step()
 
@@ -159,7 +159,7 @@ class Timer:
                 self.times.pop(k, None)
                 self.clocks.pop(k, None)
 
-    def mark(
+    def clock(
         self,
         name: str,
         ignore: Optional[bool] = None,
@@ -182,7 +182,7 @@ class Timer:
         .. warning::
 
             Don't forget to call ``.start()`` and ``.stop()`` on the returned ``Clock``
-            if you're not using ``timer.mark()`` as a context manager.
+            if you're not using ``timer.clock()`` as a context manager.
 
         Args:
             name (str): A name for the requested clock.

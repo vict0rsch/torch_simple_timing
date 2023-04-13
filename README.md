@@ -59,18 +59,18 @@ gpu = device.type == "cuda"
 timer = Timer(gpu=gpu)
 
 for epoch in range(10):
-    timer.mark("epoch").start()
+    timer.clock("epoch").start()
     for b in range(50):
         x = X[b*100: (b+1)*100]
         y = Y[b*100: (b+1)*100]
         optimizer.zero_grad()
-        with timer.mark("forward", ignore=epoch>0):
+        with timer.clock("forward", ignore=epoch>0):
             p = model(x)
         loss = torch.nn.functional.cross_entropy(p, y)
-        with timer.mark("backward", ignore=epoch>0):
+        with timer.clock("backward", ignore=epoch>0):
             loss.backward()
         optimizer.step()
-    timer.mark("epoch").stop()
+    timer.clock("epoch").stop()
 
 stats = timer.stats()
 # use stats for display and/or logging

@@ -9,10 +9,14 @@
 
 In simple terms:
 
-* A :class:`~torch_simple_timing.clock.Clock` is an object (and context-manager) that will compute the elapsed
-    time between its :meth:`~torch_simple_timing.clock.Clock.start()` (or :meth:`~torch_simple_timing.clock.Clock.__enter__`) and :meth:`~torch_simple_timing.clock.Clock.stop()` (or :meth:`~torch_simple_timing.clock.Clock.__exit__`)
-* A :class:`~torch_simple_timing.timer.Timer` will internally manage clocks so that you can focus on readability
-    and not data structures
+* A :class:`~torch_simple_timing.clock.Clock` is an object (and context-manager) that
+    will compute the elapsed
+    time between its :meth:`~torch_simple_timing.clock.Clock.start()`
+    (or :meth:`~torch_simple_timing.clock.Clock.__enter__`) and
+    :meth:`~torch_simple_timing.clock.Clock.stop()`
+    (or :meth:`~torch_simple_timing.clock.Clock.__exit__`)
+* A :class:`~torch_simple_timing.timer.Timer` will internally manage clocks so that you
+    can focus on readability and not data structures
 
 """
 from .clock import Clock  # noqa: F401
