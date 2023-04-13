@@ -14,9 +14,12 @@
     <a href="https://github.com/psf/black">
 	    <img src='https://img.shields.io/badge/code%20style-black-black' />
 	</a>
-<a href="https://pytorch.org">
-<img src="https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white"/>
-</a>
+    <a href="https://pytorch.org">
+        <img src="https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white"/>
+    </a>
+    <a href="https://pypi.org/project/torch-simple-timing/">
+        <img src="https://badge.fury.io/py/torch_simple_timing.svg" alt="PyPI version" height="18">
+    </a>
 </p>
 <br/>
 
