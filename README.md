@@ -1,3 +1,26 @@
+<p align="center">
+<strong><a href="https://github.com/vict0rsch/torch_simple_timing" target="_blank">💻&nbsp;&nbsp;Code</a></strong>
+<strong>&nbsp;&nbsp;•&nbsp;&nbsp;</strong>
+<strong><a href="https://torch-simple-timing.readthedocs.io/" target="_blank">Docs&nbsp;&nbsp;📑</a></strong>
+</p>
+
+<p align="center">
+    <a>
+	    <img src='https://img.shields.io/badge/python-3.8%2B-blue' alt='Python' />
+	</a>
+	<a href='https://torch-simple-timing.readthedocs.io/en/latest/?badge=latest'>
+    	<img src='https://readthedocs.org/projects/torch-simple-timing/badge/?version=latest' alt='Documentation Status' />
+	</a>
+    <a href="https://github.com/psf/black">
+	    <img src='https://img.shields.io/badge/code%20style-black-black' />
+	</a>
+<a href="https://pytorch.org">
+<img src="https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white"/>
+</a>
+</p>
+<br/>
+
+
 # Torch Simple Timing
 
 A simple yet versatile package to time CPU/GPU/Multi-GPU ops.
@@ -40,7 +63,7 @@ print(context_clock.duration) # 0.29688501358032227
 print(clock.duration)         # 0.292896032333374
 ```
 
-More examples, including bout how to easily share data structures using a `store` can be found in the [documentation]().
+More examples, including bout how to easily share data structures using a `store` can be found in the [documentation](https://torch-simple-timing.readthedocs.io/en/latest/autoapi/torch_simple_timing/clock/index.html).
 
 ### A `Timer`
 
