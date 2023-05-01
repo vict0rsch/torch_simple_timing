@@ -52,8 +52,15 @@ its :meth:`~torch_simple_timing.timer.Timer.stats` or use it manually to time co
 """
 from .clock import Clock  # noqa: F401
 from .timer import Timer
+from pathlib import Path
 
-__version__ = "0.1.3"
+__version__ = [
+    line.split("=")[-1].strip()
+    for line in (Path(__file__).resolve().parent.parent / "pyproject.toml")
+    .read_text()
+    .splitlines()
+    if line.startswith("version")
+][0]
 """The package version string."""
 
 TIMER = Timer()

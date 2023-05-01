@@ -15,9 +15,14 @@ author = "Victor Schmidt"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 
-import torch_simple_timing.__version__ as release
+release = [
+    line.split("=")[-1].strip()
+    for line in (ROOT / "pyproject.toml").read_text().splitlines()
+    if line.startswith("version")
+][0]
 
 extensions = [
     "myst_parser",
