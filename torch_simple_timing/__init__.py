@@ -18,6 +18,36 @@ In simple terms:
 * A :class:`~torch_simple_timing.timer.Timer` will internally manage clocks so that you
     can focus on readability and not data structures
 
+You can also decorate your functions with :func:`~torch_simple_timing.timeit` to time
+their execution with little code overhead. Then use :func:`~torch_simple_timing.get_global_timer`
+to access the timer it uses and access its :meth:`~torch_simple_timing.timer.Timer.stats` or
+use it manually to time code.
+
+.. code-block:: python
+    :caption: Example of using :func:`~torch_simple_timing.timeit` to time a function (pseudo-code)
+
+    from torch_simple_timing import timeit, get_global_timer
+
+    @timeit(gpu=True)
+    def train(*args, **kwargs):
+        # do stuff
+
+    @timeit(gpu=True)
+    def test(*args, **kwargs):
+        # some other stuff
+
+    def main():
+        for _ in range(epochs):
+            train(epochs, model, optimizer, loss_fn)
+
+        restults = test(model, loss_fn)
+
+        timer = get_global_timer()
+
+        with timer.clock("logging"):
+            logger.log(results)
+
+        logger.log(timer.stats())
 """
 from .clock import Clock  # noqa: F401
 from .timer import Timer
@@ -26,7 +56,7 @@ from .timer import Timer
 TIMER = Timer()
 
 
-def timeit(name, gpu=False, timer=None):
+def timeit(name=None, gpu=False, timer=None):
     """
     Decorator to time a function call.
     Example:
@@ -36,23 +66,27 @@ def timeit(name, gpu=False, timer=None):
         from torch_simple_timing import timeit, get_global_timer, reset_global_timer
         import torch
 
-        @timeit("train", gpu=True)
+        # Use the function name as the timer name
+        @timeit(gpu=True)
         def train():
             x = torch.rand(1000, 1000, device="cuda" if torch.cuda.is_available() else "cpu")
             return torch.inverse(x @ x)
 
+        # Use a custom name
         @timeit("test")
         def test_cpu():
             return torch.inverse(torch.rand(1000, 1000) @ torch.rand(1000, 1000))
 
-        train()
-        test()
+        if __name__ == "__main__":
+            for _ in range((epochs := 10)):
+                train()
+            test_cpu()
 
-        timer = get_global_timer()
-        stats = timer.stats()
-        print(timer.display(stats=stats))
+            timer = get_global_timer()
+            stats = timer.stats()
+            print(timer.display(stats=stats))
 
-        reset_global_timer()
+            reset_global_timer()
 
 
     """
@@ -62,7 +96,7 @@ def timeit(name, gpu=False, timer=None):
 
     def decorator(func):
         def wrapper(*args, **kwargs):
-            with timer.clock(name, gpu=gpu):
+            with timer.clock(name if name is not None else func.__name__, gpu=gpu):
                 return func(*args, **kwargs)
 
         return wrapper

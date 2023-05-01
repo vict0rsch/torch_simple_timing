@@ -118,22 +118,25 @@ You can also use a decorator to time functions without much overhead in your cod
 from torch_simple_timing import timeit, get_global_timer, reset_global_timer
 import torch
 
-@timeit("train", gpu=True)
+# Use the function name as the timer name
+@timeit(gpu=True)
 def train():
     x = torch.rand(1000, 1000, device="cuda" if torch.cuda.is_available() else "cpu")
     return torch.inverse(x @ x)
 
+# Use a custom name
 @timeit("test")
 def test_cpu():
     return torch.inverse(torch.rand(1000, 1000) @ torch.rand(1000, 1000))
 
 if __name__ == "__main__":
-    train()
-    test()
+    for _ in range((epochs := 10)):
+        train()
+
+    test_cpu()
 
     timer = get_global_timer()
-    stats = timer.stats()
-    print(timer.display(stats=stats))
+    print(timer.display())
 
     reset_global_timer()
 ```
@@ -141,8 +144,8 @@ if __name__ == "__main__":
 Prints:
 
 ```text
-train : 0.057       (n=1)
-test  : 0.046       (n=1)
+train : 0.045 ± 0.007 (n=10)
+test  : 0.046         (n= 1)
 ```
 
 By default the `@timeit` decodrator takes at least a `name`, will use `gpu=False` and use the global timer (`torch_simple_timing.TIMER`). You can pass your own timer with `@timeit(name, timer=timer)`.
