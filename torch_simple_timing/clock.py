@@ -61,10 +61,13 @@ To use stand-alone:
 
 """
 
+import warnings
 from time import time
-from typing import Dict, List, Optional, Hashable
-from torch_simple_timing.utils import synchronize
+from typing import Dict, Hashable, List, Optional
+
 import torch
+
+from torch_simple_timing.utils import synchronize
 
 
 class Clock:
@@ -120,7 +123,23 @@ class Clock:
                 if self.name not in self.store:
                     self.store[self.name] = []
 
-    def __enter__(self):
+        self._check_gpu()
+
+    def _check_gpu(self) -> None:
+        """
+        Checks if GPU timing is requested and if a GPU is available.
+        Throws a warning if GPU timing is requested but no GPU is available.
+
+        Sets ``self.gpu`` to ``False`` if no GPU is available.
+        """
+        if self.gpu and not torch.cuda.is_available():
+            warnings.warn(
+                "GPU timing requested but no GPU found. Setting `gpu` to False.",
+                RuntimeWarning,
+            )
+            self.gpu = False
+
+    def __enter__(self) -> "Clock":
         """
         Starts the timer.
 
