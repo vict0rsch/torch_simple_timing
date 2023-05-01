@@ -15,7 +15,7 @@ author = "Victor Schmidt"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-sys.path.insert(0, str(Path(__file__).resovle().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import torch_simple_timing.__version__ as release
 
