@@ -52,7 +52,8 @@ use it manually to time code.
 from .clock import Clock  # noqa: F401
 from .timer import Timer
 
-
+#: The global :class:`~torch_simple_timing.timer.Timer` instance
+#: used by :func:`~torch_simple_timing.timeit` to time functions.
 TIMER = Timer()
 
 
@@ -88,7 +89,6 @@ def timeit(name=None, gpu=False, timer=None):
 
             reset_global_timer()
 
-
     """
     if timer is None:
         global TIMER
@@ -104,15 +104,32 @@ def timeit(name=None, gpu=False, timer=None):
     return decorator
 
 
-def set_global_timer(timer):
+def set_global_timer(timer) -> None:
+    """
+    Set the global :class:`~torch_simple_timing.timer.Timer` instance
+    to a user-provided new one.
+
+    Args:
+        timer (:class:`~torch_simple_timing.timer.Timer`): The new timer instance
+            to use globally.
+    """
     global TIMER
     TIMER = timer
 
 
-def get_global_timer():
+def get_global_timer() -> Timer:
+    """
+    Get the global :class:`~torch_simple_timing.timer.Timer` instance.
+
+    Returns:
+        :class:`~torch_simple_timing.timer.Timer`: The global timer instance.
+    """
     return TIMER
 
 
-def reset_global_timer():
+def reset_global_timer() -> None:
+    """
+    Sets the global :class:`~torch_simple_timing.timer.Timer` instance to a new one.
+    """
     global TIMER
     TIMER = Timer()
