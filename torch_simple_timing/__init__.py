@@ -53,6 +53,9 @@ its :meth:`~torch_simple_timing.timer.Timer.stats` or use it manually to time co
 from .clock import Clock  # noqa: F401
 from .timer import Timer
 
+__version__ = "0.1.3"
+"""The package version string."""
+
 TIMER = Timer()
 """
 The global :class:`~torch_simple_timing.timer.Timer` instance

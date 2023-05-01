@@ -6,17 +6,18 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import sys
-import os
+from pathlib import Path
 
 project = "torch_simple_timing"
 copyright = "2023, Victor Schmidt"
 author = "Victor Schmidt"
-release = "0.1.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-sys.path.insert(0, os.path.abspath("../"))
+sys.path.insert(0, str(Path(__file__).resovle().parent.parent))
+
+import torch_simple_timing.__version__ as release
 
 extensions = [
     "myst_parser",
