@@ -54,13 +54,17 @@ from .clock import Clock  # noqa: F401
 from .timer import Timer
 from pathlib import Path
 
-__version__ = [
-    line.split("=")[-1].strip()
-    for line in (Path(__file__).resolve().parent.parent / "pyproject.toml")
-    .read_text()
-    .splitlines()
-    if line.startswith("version")
-][0]
+__version__ = (
+    [
+        line.split("=")[-1].strip()
+        for line in (Path(__file__).resolve().parent.parent / "pyproject.toml")
+        .read_text()
+        .splitlines()
+        if line.startswith("version")
+    ][0]
+    .replace("'", "")
+    .replace('"', "")
+)
 """The package version string."""
 
 TIMER = Timer()

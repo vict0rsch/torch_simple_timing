@@ -18,11 +18,17 @@ author = "Victor Schmidt"
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-release = [
-    line.split("=")[-1].strip()
-    for line in (ROOT / "pyproject.toml").read_text().splitlines()
-    if line.startswith("version")
-][0]
+release = (
+    [
+        line.split("=")[-1].strip()
+        for line in (Path(__file__).resolve().parent.parent / "pyproject.toml")
+        .read_text()
+        .splitlines()
+        if line.startswith("version")
+    ][0]
+    .replace("'", "")
+    .replace('"', "")
+)
 
 extensions = [
     "myst_parser",
