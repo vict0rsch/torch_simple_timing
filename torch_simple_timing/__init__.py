@@ -55,7 +55,7 @@ import importlib.metadata as met
 from .clock import Clock  # noqa: F401
 from .timer import Timer
 
-___version__ = met.version("gfn")
+___version__ = met.version("torch_simple_timing")
 """The package version string."""
 
 TIMER = Timer()
