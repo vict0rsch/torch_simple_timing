@@ -50,21 +50,12 @@ its :meth:`~torch_simple_timing.timer.Timer.stats` or use it manually to time co
 
         logger.log(timer.stats())
 """
+import importlib.metadata as met
+
 from .clock import Clock  # noqa: F401
 from .timer import Timer
-from pathlib import Path
 
-__version__ = (
-    [
-        line.split("=")[-1].strip()
-        for line in (Path(__file__).resolve().parent.parent / "pyproject.toml")
-        .read_text()
-        .splitlines()
-        if line.startswith("version")
-    ][0]
-    .replace("'", "")
-    .replace('"', "")
-)
+___version__ = met.version("gfn")
 """The package version string."""
 
 TIMER = Timer()
